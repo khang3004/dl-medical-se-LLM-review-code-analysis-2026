@@ -1,0 +1,109 @@
+% Aspectratio 16:9 is the standard for modern projectors/monitors
+\documentclass[aspectratio=169, 11pt]{beamer}
+
+% Import my custom style
+\usepackage{hcmus_beamer}
+
+% Define image directory
+\graphicspath{ {./images/} }
+
+% --- PRESENTATION METADATA ---
+%\titlegraphic{
+%    \includegraphics[height=1.5cm]{hcmus_logo}
+%}
+\title[Multivariate Kernel Density Estimation]{Multivariate Kernel Density Estimation}
+
+\subtitle{Computational Statistics Course Project}
+
+% --- OPTIMIZED STANDARD METADATA ---
+
+\author[Group 3]{
+    \small
+    \begin{tabular}{c c c}
+        \textbf{Khang Nguyen} & \textbf{Nhat Tien Nguyen} & \textbf{Phuc Loc Nguyen} \\
+        \scriptsize \textit{25C01035} & \scriptsize \textit{25C01039} & \scriptsize \textit{25C01041}
+    \end{tabular}
+}
+
+\institute[HCMUS]{
+    \vspace{0.5em} % Tạo khoảng thở
+    \begin{columns}[c]
+        \begin{column}{0.4\textwidth}
+            \flushright
+            \includegraphics[height=1.6cm, keepaspectratio]{images/hcmus_logo}
+        \end{column}
+
+
+        \begin{column}{0.6\textwidth}
+            \flushleft
+            \scriptsize Master of Data Science \\
+            \small \textbf{University of Science, VNU-HCM}
+        \end{column}
+    \end{columns}
+}
+
+\date{\small \today}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{footline}{
+    \hbox{
+        \begin{beamercolorbox}[wd=1\paperwidth, ht=2.25ex, dp=1ex, right]{}
+            % Màu chữ xám nhạt cho đỡ chói
+            \color{gray} \small \insertframenumber{} / \inserttotalframenumber \hspace*{2em}
+        \end{beamercolorbox}
+    }
+    \vspace*{0.5em}
+}
+
+% --- MAIN DOCUMENT ---
+\begin{document}
+
+% 1. Title Slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% 2. Table of Contents
+\begin{frame}{Outline}
+    \tableofcontents[hideallsubsections] % Cleaner look
+\end{frame}
+
+% 3. Modular Content
+% Each member works on their own file in the 'sections' folder
+\include{sections/problem}
+\include{sections/general_mkde}
+\include{sections/product_kernels}
+\include{sections/bandwidth_selection}
+\include{sections/radial_symetric_estimate}
+\include{sections/correlation_handle_whitening}
+\include{sections/fourier_integral_kde}
+% --- FINAL SLIDE: Q&A & CONTACT ---
+\begin{frame}[plain]
+    \centering
+
+    \vspace{1cm}
+    {\Huge \bfseries \textcolor{darkred}{Thank You for Your Attention!}}
+
+    \vspace{1.5cm}
+
+    % 2. Q&A
+    {\LARGE \textbf{Q \& A}} \\
+    \vspace{0.5em}
+    \textit{\color{gray} We are open to any questions or feedback.}
+
+    \vspace{2cm}
+
+    % 3. (Project Resource)
+    % Dùng box bo tròn để chứa link GitHub/Email
+    \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{block title}
+        \textbf{Project Source Code \& Slides:} \\
+        \vspace{0.3em}
+        \footnotesize \url{https://github.com/khang3004/Multivariate_KernelDensity_Estimators.git}
+    \end{beamercolorbox}
+
+    \vspace{0.5em}
+    \scriptsize \textbf{Contact:} \texttt{21C0103580@student.hcmus.edu.vn}
+
+\end{frame}
+\end{document}
