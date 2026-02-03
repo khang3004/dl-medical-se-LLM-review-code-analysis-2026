@@ -35,8 +35,12 @@
 \DeclareMathOperator{\Var}{Var}             % Variance
 \DeclareMathOperator{\Bias}{Bias}           % Bias
 \newcommand{\vect}[1]{\mathbf{#1}}          % Bold vectors
-\newcommand{\R}{\mathbb{R}}                 % Real numbers
+% @brief: Symbol for Real number space (R)
+\newcommand{\R}{\mathbb{R}}
 
+% @brief: Absolute value with auto-sizing delimiters.
+% @usage: \abs{x} or \abs*{x} for dynamic sizing.
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 %\logo{
 %    \includegraphics[height=0.8cm]{hcmus_logo}
 %%    \vspace{220pt}
