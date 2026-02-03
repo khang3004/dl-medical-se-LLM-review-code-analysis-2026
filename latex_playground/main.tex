@@ -15,24 +15,23 @@
 ]{\chapter*{Advanced Deep Learning in Medical Imaging \& Automated Software Engineering}
 }
 
-\subtitle{Computational Statistics Course Project}
+\subtitle{Introduction to Data Science Course Project}
 
 % --- OPTIMIZED STANDARD METADATA ---
 
 \author[Group 3]{
     \small
-    \begin{tabular}{c c c}
-        \textbf{Khang Nguyen} & \textbf{Nhat Tien Nguyen} & \textbf{Phuc Loc Nguyen} \\
-        \scriptsize \textit{25C01035} & \scriptsize \textit{25C01039} & \scriptsize \textit{25C01041}
+    \begin{tabular}{c c c c}
+        \textbf{Khang Nguyen}         & \textbf{Duy Thanh Ng.}        & \textbf{Nang Khanh Ng.}       & \textbf{Huu Hung Mai}         \\
+        \scriptsize \textit{25C01035} & \scriptsize \textit{25C01047} & \scriptsize \textit{25C01036} & \scriptsize \textit{25C01032}
     \end{tabular}
 }
-
 \institute[HCMUS]{
-    \vspace{0.5em} % Tạo khoảng thở
+    \vspace{0.08em}
     \begin{columns}[c]
         \begin{column}{0.4\textwidth}
             \flushright
-            \includegraphics[height=1.6cm, keepaspectratio]{images/hcmus_logo}
+            \includegraphics[height=1.2cm, keepaspectratio]{images/hcmus_logo}
         \end{column}
 
 
@@ -51,37 +50,38 @@
 \setbeamertemplate{footline}{
     \hbox{
         \begin{beamercolorbox}[wd=1\paperwidth, ht=2.25ex, dp=1ex, right]{}
-            % Màu chữ xám nhạt cho đỡ chói
             \color{gray} \small \insertframenumber{} / \inserttotalframenumber \hspace*{2em}
         \end{beamercolorbox}
     }
     \vspace*{0.5em}
 }
 
+% --- Development Optimization ---
+% Uncomment the line below to compile ONLY the Leukemia module (faster debug)
+% \includeonly{sections/02_leukemia/_master}
+
 % --- MAIN DOCUMENT ---
 \begin{document}
 
 % 1. Title Slide
-\begin{frame}
-    \titlepage
-\end{frame}
+    \begin{frame}
+        \titlepage
+    \end{frame}
 
 % 2. Table of Contents
-\begin{frame}{Outline}
-    \tableofcontents[hideallsubsections] % Cleaner look
-\end{frame}
+    \begin{frame}{Outline}
+        \tableofcontents[hideallsubsections] % Cleaner look
+    \end{frame}
 
 % 3. Modular Content
 % Each member works on their own file in the 'sections' folder
-\include{sections/problem}
-\include{sections/general_mkde}
-\include{sections/product_kernels}
-\include{sections/bandwidth_selection}
-\include{sections/radial_symetric_estimate}
-\include{sections/correlation_handle_whitening}
-\include{sections/fourier_integral_kde}
+    \include{sections/01_intro/_master}
+    \include{sections/02_leukemia/_master}
+    \include{sections/03_alzheimer/_master}
+    \include{sections/04_llm_review/_master}
+    \include{sections/05_conclusion/_master}
 % --- FINAL SLIDE: Q&A & CONTACT ---
-\begin{frame}[plain]
+    \begin{frame}[plain]
     \centering
 
     \vspace{1cm}
@@ -97,7 +97,6 @@
     \vspace{2cm}
 
     % 3. (Project Resource)
-    % Dùng box bo tròn để chứa link GitHub/Email
     \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{block title}
         \textbf{Project Source Code \& Slides:} \\
         \vspace{0.3em}
@@ -107,5 +106,5 @@
     \vspace{0.5em}
     \scriptsize \textbf{Contact:} \texttt{21C0103580@student.hcmus.edu.vn}
 
-\end{frame}
+    \end{frame}
 \end{document}
