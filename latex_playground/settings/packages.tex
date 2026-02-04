@@ -3,11 +3,10 @@
 % Description: Centralized package imports to keep main.tex clean.
 % -----------------------------------------------------------------------------
 
-% --- Graphics & Visualization ---
-\usepackage{graphicx}
+% --- Visualization ---
 \usepackage{tikz}      % For drawing architectures (GCLI, VGG16)
 \usetikzlibrary{external}
-\tikzexternalize[prefix=figures/cache/] % Cache images to speed up re-compilation
+%\tikzexternalize[prefix=figures/cache/] % Cache images to speed up re-compilation
 \usepackage{pgfplots}  % For plotting results charts
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{shapes, arrows, positioning, shadows}
@@ -23,3 +22,13 @@
 % --- Bibliography ---
 \usepackage[style=ieee, backend=biber]{biblatex}
 \addbibresource{bib/references.bib}
+
+% -----------------------------------------------------------------------------
+% Graphics Configuration
+% -----------------------------------------------------------------------------
+\usepackage{graphicx}
+
+% --- Optimize Image Paths (Multi-path configuration) ---
+% LaTeX will search for images in these folders sequentially.
+% Rule: Keep the trailing slash "/" at the end of each path!
+%\graphicspath{ {./images/} }
