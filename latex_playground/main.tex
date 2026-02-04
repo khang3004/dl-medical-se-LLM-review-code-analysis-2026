@@ -2,8 +2,9 @@
 \documentclass[aspectratio=169, 11pt]{beamer}
 
 % Import my custom style
-\usepackage{hcmus_beamer}
-
+\usepackage{settings/hcmus_beamer}
+\input{settings/packages}
+\input{settings/commands}
 % Define image directory
 \graphicspath{ {./images/} }
 
@@ -11,7 +12,7 @@
 %\titlegraphic{
 %    \includegraphics[height=1.5cm]{hcmus_logo}
 %}
-\title[\chapter*{Advanced Deep Learning in Medical Imaging \& Automated Software Engineering}
+\title[\keyterm{\chapter*{Advanced Deep Learning in Medical Imaging \& Automated Software Engineering}}
 ]{\chapter*{Advanced Deep Learning in Medical Imaging \& Automated Software Engineering}
 }
 

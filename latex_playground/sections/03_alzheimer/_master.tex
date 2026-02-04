@@ -1,0 +1,27 @@
+% -----------------------------------------------------------------------------
+% Module Controller: Alzheimer Diagnosis (Paper 2)
+% Role: Orchestrates the flow of the VGG16 Fusion presentation.
+% -----------------------------------------------------------------------------
+
+\section{Alzheimer Diagnosis (VGG16 Fusion)}
+
+% 1. Cover Slide
+\begin{frame}[plain, c]
+    \centering
+    \Huge \textcolor{DeepBlue}{\textbf{Paper 02}} \\
+    \vspace{0.5cm}
+    \Large The New Method for Detection of Alzheimer's Disease
+\end{frame}
+
+% 2. Logical Flow
+
+% -> Data Preprocessing (MRI slices, Standardized pipeline)
+% Key focus: How they handle 3D MRI data
+\input{sections/03_alzheimer/1_preprocessing.tex}
+
+% -> Methodology: VGG16 Transfer Learning & Model Fusion
+% Key focus: Logic OR fusion strategy
+\input{sections/03_alzheimer/2_model_fusion.tex}
+
+% -> Results: Confusion Matrix & Accuracy Comparison
+\input{sections/03_alzheimer/3_results.tex}
