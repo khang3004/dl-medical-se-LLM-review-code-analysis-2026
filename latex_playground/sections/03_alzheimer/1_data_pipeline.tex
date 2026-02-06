@@ -1,0 +1,73 @@
+% -----------------------------------------------------------------------------
+% File: sections/03_alzheimer/1_data_pipeline.tex
+% Description: Standardized MRI Preprocessing Pipeline (Cleaned)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Standardized MRI Preprocessing Pipeline}
+    \centering
+
+    % Resize diagram to fit width
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=1.5cm,
+        proc/.style={
+            rectangle, draw=DeepBlue, fill=white, thick,
+            minimum height=2em, rounded corners, align=center,
+            drop shadow
+        },
+        arrow/.style={->, >=stealth, thick, DeepBlue}
+    ]
+
+        % --- Nodes ---
+        \node[proc, fill=gray!20] (raw) {Raw MRI\\(ADNI Dataset)};
+
+        \node[proc, right=1cm of raw, fill=blue!10] (fsl) {FSL Preprocessing};
+
+        \node[proc, right=1cm of fsl, fill=orange!10] (roi) {ROI Extraction\\(Hippocampus)};
+
+        \node[proc, right=1cm of roi, fill=green!10] (aug) {Data\\Augmentation};
+
+        % --- Arrows ---
+        \draw[arrow] (raw) -- (fsl);
+        \draw[arrow] (fsl) -- (roi);
+        \draw[arrow] (roi) -- (aug);
+
+        % --- Detailed Callouts (Appear on Click) ---
+
+        % Step 2: FSL Details
+        \node<2->[below=0.5cm of fsl, text=red, align=center, font=\footnotesize] (fsl_det) {
+            \textbf{Tools Used:}\\
+            $\bullet$ RobustFOV (Crop)\\
+            $\bullet$ BET (Skull Strip)\\
+            $\bullet$ FLIRT/FNIRT (Reg.)
+        };
+        \draw<2->[dashed, red] (fsl) -- (fsl_det);
+
+        % Step 3: ROI Details
+        \node<3->[below=0.5cm of roi, text=DeepBlue, align=center, font=\footnotesize] (roi_det) {
+            \textbf{Slice Selection:}\\
+            Coronal Axis\\
+            (Hippocampus focus)
+        };
+        \draw<3->[dashed, DeepBlue] (roi) -- (roi_det);
+
+    \end{tikzpicture}
+    }
+
+    \vspace{1em}
+
+    % --- Text Explanation (Dynamic) ---
+    % Note: Replace \cite{key} with your actual BibTeX keys from references.bib
+
+    \only<1>{
+        We utilize the \textbf{ADNI Dataset} with a subject-wise splitting strategy to prevent data leakage.
+    }
+
+    \only<2>{
+        Standardization is key: We use \textbf{FSL Tools} for skull stripping and non-linear registration to MNI space.
+    }
+
+    \only<3>{
+        We specifically target the \textbf{Hippocampus} region in the Coronal plane, as it's the first area affected by AD.
+    }
+\end{frame}

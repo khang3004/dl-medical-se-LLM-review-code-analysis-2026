@@ -1,0 +1,50 @@
+% -----------------------------------------------------------------------------
+% File: sections/03_alzheimer/3_fusion_logic.tex
+% Description: Logical OR Fusion Strategy (Clean Version)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Dual-Model Fusion: The Logical OR Strategy}
+
+    \begin{columns}
+        % Left: The Why
+        \begin{column}{0.5\textwidth}
+            \textbf{The Imbalance Problem:}
+            \begin{itemize}
+                \item Individual models have high Precision but lower Sensitivity.
+                \item \textit{Medical Risk:} A False Negative (missing a sick patient) is dangerous.
+            \end{itemize}
+
+            \vspace{0.5cm}
+            \textbf{The Solution:}
+            \begin{itemize}
+                \item Combine \textbf{Base VGG16} ($L_1$) and \textbf{Tuned VGG16} ($L_2$).
+                \item Use Logical Disjunction (OR).
+            \end{itemize}
+        \end{column}
+
+        % Right: The How (Truth Table)
+        \begin{column}{0.5\textwidth}
+            \begin{beamercolorbox}[sep=1em, rounded=true, shadow=true, center, wd=0.9\textwidth, bg=blue!5]{equation}
+                \Large $L_{final} = L_{1} \lor L_{2}$
+            \end{beamercolorbox}
+
+            \vspace{0.5cm}
+            \centering
+            \small
+            \renewcommand{\arraystretch}{1.3}
+            \begin{tabular}{cc|c}
+                \toprule
+                \textbf{VGG16} ($L_1$) & \textbf{Tuned} ($L_2$) & \textbf{Final Diagnosis} \\
+                \midrule
+                Healthy (0) & Healthy (0) & \textcolor{green}{Healthy (0)} \\
+                \textbf{AD (1)} & Healthy (0) & \textcolor{red}{\textbf{AD (1)}} \\
+                Healthy (0) & \textbf{AD (1)} & \textcolor{red}{\textbf{AD (1)}} \\
+                AD (1) & AD (1) & \textcolor{red}{\textbf{AD (1)}} \\
+                \bottomrule
+            \end{tabular}
+
+            \vspace{0.3cm}
+            \footnotesize \textit{$\Rightarrow$ If \textbf{ANY} model suspects AD, the system flags it.}
+        \end{column}
+    \end{columns}
+\end{frame}

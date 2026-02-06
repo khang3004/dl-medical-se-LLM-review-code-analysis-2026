@@ -14,14 +14,23 @@
 \end{frame}
 
 % 2. Logical Flow
+% --- Module 0: Introduction (NEW) ---
+\subsection{Introduction \& Problem Statement}
+\input{sections/03_alzheimer/0_introduction}
 
 % -> Data Preprocessing (MRI slices, Standardized pipeline)
-% Key focus: How they handle 3D MRI data
-\input{sections/03_alzheimer/1_preprocessing}
+% --- Module 1: Data Pipeline ---
+\subsection{Standardized Preprocessing}
+\input{sections/03_alzheimer/1_data_pipeline}
 
-% -> Methodology: VGG16 Transfer Learning & Model Fusion
-% Key focus: Logic OR fusion strategy
-\input{sections/03_alzheimer/2_model_fusion}
+% --- Module 2: VGG16 & Training Strategy ---
+\subsection{Architecture \& Training}
+\input{sections/03_alzheimer/2_vgg_architecture}
 
-% -> Results: Confusion Matrix & Accuracy Comparison
-\input{sections/03_alzheimer/3_results}
+% --- Module 3: Dual-Model Fusion ---
+\subsection{Fusion Strategy}
+\input{sections/03_alzheimer/3_fusion_logic}
+
+% --- Module 4: Benchmarks ---
+\subsection{Experimental Results}
+\input{sections/03_alzheimer/4_results}
