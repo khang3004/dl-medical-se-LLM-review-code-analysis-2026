@@ -1,0 +1,111 @@
+
+% --- SLIDE 1: THE VISUAL HOOK (Motivation) ---
+\begin{frame}{The Silent Crisis: Alzheimer's Disease (AD)}
+    \begin{columns}
+        % Left Column: Image
+        \begin{column}{0.5\textwidth}
+            \centering
+            \begin{figure}
+                \includegraphics[width=0.9\textwidth, height=0.6\textheight, keepaspectratio]{alzheimer/ad_brain_comparison}
+                \caption{\footnotesize Healthy Brain vs. Severe AD Brain. Note the extreme shrinkage (atrophy).}
+            \end{figure}
+        \end{column}
+
+        % Right Column: Stats
+        \begin{column}{0.5\textwidth}
+            \textbf{Why this matters NOW?}
+            \vspace{0.5cm}
+
+            % --- FIX ERROR 1: Correct way to set customized box colors ---
+            { % Scope start
+                \setbeamercolor{statbox}{bg=orange!10, fg=black}
+                \begin{beamercolorbox}[sep=0.8em, rounded=true, wd=\textwidth]{statbox}
+                    \textbf{The "Silver Tsunami"} \\
+                    Population aged 65+ will \textbf{DOUBLE} by 2050.
+                \end{beamercolorbox}
+            } % Scope end
+
+            \vspace{0.3cm}
+
+            { % Scope start
+                \setbeamercolor{statbox}{bg=red!10, fg=black}
+                \begin{beamercolorbox}[sep=0.8em, rounded=true, wd=\textwidth]{statbox}
+                    \textbf{The Radiologist Shortage} \\
+                    Projected gap of \textbf{42,000 specialists} by 2033.
+                \end{beamercolorbox}
+            } % Scope end
+
+            \vspace{0.5cm}
+            \centering \small
+            \textit{AI-assisted screening is a necessity, not a luxury.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% --- SLIDE 2: VISUALIZING THE PROBLEM (Fixed TikZ) ---
+\begin{frame}{The Core Technical Flaw: "Data Leakage"}
+
+    Many previous "high-accuracy" studies fail in clinical practice. Why?
+    \vspace{0.3cm}
+    \centering
+
+    % Define colors locally
+    \definecolor{LocalGreen}{RGB}{0, 150, 80}
+    \definecolor{LocalBlue}{RGB}{0, 51, 102}
+
+    % --- FIX ERROR 2: No blank lines inside resizebox ---
+    \resizebox{0.95\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=1.5cm and 1cm,
+        font=\sffamily\footnotesize,
+        % Styles
+        patient/.style={
+            rectangle, rounded corners=5pt, draw=LocalBlue, fill=blue!10,
+            minimum height=1.2cm, minimum width=1.5cm, align=center, thick
+        },
+        slice/.style={
+            rectangle, draw=gray, fill=white, thin, minimum width=0.15cm, minimum height=0.6cm
+        },
+        box/.style={
+            rectangle, draw=black, thick, minimum width=3cm, minimum height=1.5cm, rounded corners, align=center
+        },
+        arrow/.style={->, >=stealth, thick}
+    ]
+        % === LEFT SIDE ===
+        \node[font=\bfseries\small] at (0, 3.5) {\textcolor{red}{THE WRONG WAY} (Slice-based)};
+        \node[patient] (p1) at (0, 2) {Patient A\\(MRI Vol)};
+        % Slices
+        \foreach \x in {-0.6, -0.3, 0, 0.3, 0.6} {
+            \node[slice, below=0.1cm of p1, xshift=\x cm] {};
+        }
+        % Boxes
+        \node[box, fill=red!5, below left=1.8cm and 0.2cm of p1] (train_bad) {TRAINING SET\\(Slices A1, A3...)};
+        \node[box, fill=red!5, below right=1.8cm and 0.2cm of p1] (test_bad) {TESTING SET\\(Slices A2, A4...)};
+        % Arrows
+        \draw[arrow, red, dashed] (0, 1.2) -- (train_bad.north);
+        \draw[arrow, red, dashed] (0, 1.2) -- (test_bad.north);
+        % Alert
+        \node[below=0.2cm of train_bad, text=red, font=\bfseries\scriptsize, align=center, xshift=2cm] {
+            \textbf{[!] DATA LEAKAGE}\\Model "memorizes" Patient A anatomy.
+        };
+
+        % === RIGHT SIDE ===
+        \node[font=\bfseries\small] at (8, 3.5) {\textcolor{LocalGreen}{THE RIGHT WAY} (Subject-wise)};
+        \node[patient] (pA) at (6.5, 2) {Patient A};
+        \node[patient] (pB) at (9.5, 2) {Patient B};
+        % Boxes
+        \node[box, fill=green!5, below=1.8cm of pA] (train_good) {TRAINING SET\\(All of A)};
+        \node[box, fill=green!5, below=1.8cm of pB] (test_good) {TESTING SET\\(All of B)};
+        % Arrows
+        \draw[arrow, LocalGreen, thick] (pA.south) -- (train_good.north);
+        \draw[arrow, LocalGreen, thick] (pB.south) -- (test_good.north);
+        % Barrier
+        \draw[line width=2pt, LocalGreen] (8, 1) -- (8, -2.5);
+        \node[fill=white, text=LocalGreen, font=\bfseries\scriptsize, rotate=90] at (8, -0.8) {STRICT BARRIER};
+        % Success
+        \node[below=0.2cm of train_good, text=LocalGreen, font=\bfseries\scriptsize, align=center, xshift=1.5cm] {
+            \textbf{[OK] ROBUST}\\Testing on unseen brains.
+        };
+    \end{tikzpicture}%
+    }
+\end{frame}

@@ -1,0 +1,50 @@
+% -----------------------------------------------------------------------------
+% File: sections/03_alzheimer/4_results.tex
+% Description: Experimental Results & Benchmarks (Clean Version)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{Experimental Results}
+
+    % --- Key Metrics Highlights ---
+    \begin{columns}
+        \begin{column}{0.33\textwidth}
+            \begin{beamercolorbox}[sep=1em, center, rounded=true, shadow=false, bg=blue!10]{result}
+                Accuracy \\ \LARGE \textbf{89.87\%}
+            \end{beamercolorbox}
+        \end{column}
+        \begin{column}{0.33\textwidth}
+            \begin{beamercolorbox}[sep=1em, center, rounded=true, shadow=false, bg=green!10]{result}
+                Precision \\ \LARGE \textbf{92.11\%}
+            \end{beamercolorbox}
+        \end{column}
+        \begin{column}{0.33\textwidth}
+            \begin{beamercolorbox}[sep=1em, center, rounded=true, shadow=false, bg=orange!10]{result}
+                Sensitivity \\ \LARGE \textbf{87.50\%}
+            \end{beamercolorbox}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.8cm}
+
+    % --- Detailed Comparison Table ---
+    \begin{table}
+        \centering
+        \small
+        \caption{Impact of Fusion Strategy on Performance}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Sensitivity} & \textbf{Specificity} \\
+            \midrule
+            VGG16 (Base) & 83.54\% & 90.91\% & 75.00\% & 92.31\% \\
+            Tuned VGG16 & 87.34\% & \textbf{94.12\%} & 80.00\% & \textbf{94.87\%} \\
+            \midrule
+            % Highlight Row using 'colortbl' package logic (often loaded with xcolor)
+            \textbf{Fused Model} & \textbf{89.87\%} & 92.11\% & \textbf{\textcolor{red}{87.50\%}} & 92.31\% \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \vspace{0.2cm}
+    \footnotesize
+    \textbf{Conclusion:} The fusion strategy significantly boosts \textbf{Sensitivity} (+7.5\%), drastically reducing FN.
+\end{frame}

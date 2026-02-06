@@ -1,0 +1,71 @@
+% -----------------------------------------------------------------------------
+% File: sections/03_alzheimer/2_vgg_architecture.tex
+% Description: 3-Phase Training Strategy (Clean Version)
+% -----------------------------------------------------------------------------
+
+\begin{frame}{The 3-Phase Progressive Training Strategy}
+    \textbf{Core Idea:} Instead of standard transfer learning, we employ a \textit{Progressive Unfreezing} strategy to adapt ImageNet features to MRI.
+
+    \vspace{0.2cm}
+    \centering
+
+    \begin{columns}[t]
+        % --- Phase 1 ---
+        \begin{column}{0.32\textwidth}
+            \onslide<1->{
+                \begin{beamercolorbox}[sep=6pt, center, rounded=true, shadow=true, bg=gray!20, fg=black]{block title}
+                    \textbf{Phase 1}\\Feature Extraction
+                \end{beamercolorbox}
+                \vspace{0.2cm}
+                \small
+                \begin{itemize}
+                    \item \textbf{VGG16:} Frozen
+                    \item \textbf{Head:} Trainable
+                    \item \textbf{LR:} $10^{-4}$
+                    \item \textit{Goal:} Adapt classifier to MRI features.
+                \end{itemize}
+            }
+        \end{column}
+
+        % --- Phase 2 ---
+        \begin{column}{0.32\textwidth}
+            \onslide<2->{
+                \begin{beamercolorbox}[sep=6pt, center, rounded=true, shadow=true, bg=yellow!30, fg=black]{block title}
+                    \textbf{Phase 2}\\Shallow Tuning
+                \end{beamercolorbox}
+                \vspace{0.2cm}
+                \small
+                \begin{itemize}
+                    \item \textbf{Last 8 Layers:} Unfrozen
+                    \item \textbf{Others:} Frozen
+                    \item \textbf{LR:} $10^{-5}$ (Reduced)
+                    \item \textit{Goal:} Refine mid-level filters.
+                \end{itemize}
+            }
+        \end{column}
+
+        % --- Phase 3 ---
+        \begin{column}{0.32\textwidth}
+            \onslide<3->{
+                \begin{beamercolorbox}[sep=6pt, center, rounded=true, shadow=true, bg=red!20, fg=black]{block title}
+                    \textbf{Phase 3}\\Deep Tuning
+                \end{beamercolorbox}
+                \vspace{0.2cm}
+                \small
+                \begin{itemize}
+                    \item \textbf{Last 10 Layers:} Unfrozen
+                    \item \textbf{LR:} $10^{-5}$
+                    \item \textbf{Result:} \textbf{Tuned VGG16}
+                    \item \textit{Goal:} High-level adaptation.
+                \end{itemize}
+            }
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \onslide<3->{
+        \begin{alertblock}{Why Progressive?}
+            It prevents \textbf{Catastrophic Forgetting}, preserving the robust visual patterns learned from ImageNet.
+        \end{alertblock}
+    }
+\end{frame}
