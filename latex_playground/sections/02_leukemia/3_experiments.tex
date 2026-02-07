@@ -2,15 +2,17 @@
 % SLIDE 7: Results (1)
 % ============================================
 \begin{frame}{III. Results}
+    \vspace{-0.2cm}
     \begin{center}
         \textbf{Table 2.} Performance results of different object detectors on LeukemiaAttri test set.
         
-        \vspace{0.4cm}
+        \vspace{0.3cm}
         
         \small
+        \renewcommand{\arraystretch}{1.1}
         \begin{tabular}{l|c|c|c|c|c}
             \toprule
-            \textbf{Model} & \textbf{Sensitivity (\%)} & \textbf{mAP50 (\%)} & \textbf{mAP50-95 (\%)} & \textbf{Params (M)} & \textbf{FLOPS (G)} \\
+            \textbf{Model} & \textbf{Sensitivity} & \textbf{mAP50} & \textbf{mAP50-95} & \textbf{Params} & \textbf{GFLOPS} \\
             \midrule
             YOLOv11s & 48.9 & 38.8 & 22.6 & 9.41 & 21.3 \\
             YOLOv11s + ECA & 50.6 & 41.3 & 24.3 & 8.43 & 20.5 \\
@@ -43,32 +45,48 @@
 % ============================================
 \begin{frame}{IV. Remarks and Conclusion}
     \begin{columns}[T]
-        \begin{column}{0.58\textwidth}
+        \begin{column}{0.48\textwidth}
             \textbf{Remarks}
             
-            \vspace{0.4cm}
+            \vspace{0.3cm}
             
             \begin{itemize}
-                \item The experiments were conducted only on \textbf{YOLOv11} (a single-stage detector)
+                \item Experiments conducted only on \textbf{YOLOv11} (single-stage detector)
                 
                 \vspace{0.2cm}
                 
-                \item Future work can explore:
+                \item Future work:
                 \begin{itemize}
-                    \item Other YOLO variants or single-stage detectors
+                    \item Other YOLO variants
                     \item More robust attention mechanisms
                 \end{itemize}
                 
                 \vspace{0.2cm}
                 
-                \item The model still shows \textbf{limitations} in fully identifying latent malignant cells, as the sensitivity remains relatively low
+                \item \textbf{Limitation:} Low sensitivity in identifying latent malignant cells
             \end{itemize}
         \end{column}
-        \begin{column}{0.38\textwidth}
-            % IMAGE: Illustration or example
-            \begin{center}
-                \fbox{\parbox{0.9\textwidth}{\centering\vspace{2.5cm}\textit{[Image: Limitation illustration]}\vspace{2.5cm}}}
-            \end{center}
+        
+        \begin{column}{0.48\textwidth}
+            \textbf{Conclusion}
+            
+            \vspace{0.3cm}
+            
+            \begin{itemize}
+                \item \textbf{GCLI} achieves best mAP50-95 (25.1\%)
+                
+                \vspace{0.2cm}
+                
+                \item \textbf{CBAM} achieves highest sensitivity (55.4\%)
+                
+                \vspace{0.2cm}
+                
+                \item Attention mechanisms improve detection with minimal computational cost
+                
+                \vspace{0.2cm}
+                
+                \item Promising direction for automated leukemia diagnosis
+            \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
