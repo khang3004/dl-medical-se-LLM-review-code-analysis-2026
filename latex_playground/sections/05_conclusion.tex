@@ -1,0 +1,25 @@
+% -----------------------------------------------------------------------------
+% File: sections/05_conclusion.tex
+% Description: Section 5 - Conclusion & Discussion
+% -----------------------------------------------------------------------------
+
+\section{Conclusion \& Cross-Domain Discussion}
+\label{sec:conclusion}
+
+This report has presented a comprehensive critical analysis of three state-of-the-art applications of artificial intelligence presented at ICCCI 2025. These papers represent the dual pillars of modern applied deep learning: computer vision in clinical diagnostics and natural language processing in automated software engineering.
+
+\subsection{Cross-Domain Paradigm Synthesis}
+Comparing these domains reveals key differences in their optimization constraints and engineering priorities:
+\begin{enumerate}
+    \item \textbf{Data Leakage vs. Context Leakage:} In medical imaging, data leakage is a structural split failure (e.g., sharing a patient's slices between training and testing), which artificially inflates performance metrics. In software engineering, the challenge is context limitation: single-file LLM analysis misses project-level dependencies, yielding incomplete reviews.
+    \item \textbf{Sensitivity-Safety vs. Precision-Cost:} In clinical CAD systems, sensitivity is the primary safety metric; false negatives can delay critical treatment. The VGG16 fusion paper handles this via logical disjunction ($L_1 \lor L_2$), which recovers missed diagnoses at the expense of a minor drop in precision. Conversely, in software engineering, developers are sensitive to "linter fatigue." Review systems must balance precision (avoiding false alerts) and API call costs, making GPT-4o-mini a highly viable option compared to larger models.
+\end{enumerate}
+
+\subsection{Impact of Proposed MLE/AIE Extensions}
+To bridge the gap between research and clinical/industrial deployment, we have proposed nine advanced engineering extensions across the papers:
+\begin{itemize}
+    \item \textbf{Medical Imaging:} We proposed Self-Supervised Cell-MAE pre-training to leverage unlabeled smears, Gaussian bounding box regression to model boundary uncertainty, 3D Swin UNETR to process continuous MRI volumes, and Multi-modal Cross-attention to integrate imaging with clinical markers.
+    \item \textbf{Automated Software Engineering:} We proposed Graph-RAG to construct a project-wide dependency graph, an Execution-Guided dynamic compile-test loop in a sandbox container, and a Multi-agent consensus debate protocol to reduce evaluation variance.
+\end{itemize}
+
+In summary, while deep learning models provide strong baselines, real-world deployment requires system-level engineering. Applying robust data protocols, multi-modal fusion, and closed-loop feedback systems allows machine learning engineers and AI architects to transform standalone models into reliable, high-performance production systems.

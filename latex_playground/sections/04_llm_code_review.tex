@@ -1,0 +1,156 @@
+% -----------------------------------------------------------------------------
+% File: sections/04_llm_code_review.tex
+% Description: Section 4 - LLMs as Code Review Agents
+% -----------------------------------------------------------------------------
+
+\section{LLMs as Code Review Agents: Evaluation and Alignment}
+\label{sec:llm_review}
+
+\paperCard{LLMs as Code Review Agents: A Rapid Review and Experimental Evaluation with Human Expert Judges}{M. Kawalerowicz, M. Pietranik, K. St\k{e}pniak}{ICCCI 2025}
+
+\subsection{Problem Statement \& LLM-as-a-Judge}
+Quality assurance through code review is a vital phase of the software development lifecycle (SDLC), but it is resource-intensive. Automated tools like static linters are limited to syntactic rules, failing to assess semantic properties like readability, SOLID design principles, or security risks. 
+
+Recently, Large Language Models (LLMs) have been proposed as automated code review agents under the \highlight{LLM-as-a-Judge} paradigm. While LLMs are cheap and fast, assessing their alignment with human expert consensus and understanding their biases is crucial before deployment in production pipelines.
+
+\subsection{Evaluation Methodology}
+Kawalerowicz et al. \cite{llm_review_2025} propose a parallel evaluation framework comparing LLM scores against human expert judgments.
+
+\begin{figure*}[t]
+    \centering
+    \resizebox{0.95\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.5cm and 1.0cm,
+        font=\sffamily\small,
+        corpus/.style={rectangle, draw=codeGreen, fill=green!5, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, rounded corners},
+        actor/.style={rectangle, draw=black, thick, fill=white, minimum width=3cm, minimum height=1.0cm, align=center, drop shadow},
+        process/.style={rectangle, draw=gray, dashed, fill=gray!5, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\footnotesize},
+        metric/.style={circle, draw=black, fill=yellow!10, thick, inner sep=2pt, minimum size=0.8cm},
+        arrow/.style={->, >=stealth, ultra thick, gray!80, rounded corners=5pt}
+    ]
+        \node[corpus] (input) {\textbf{Code Corpus ($F$)}\\75 files\\(Java, Py, C\#, JS, TS)};
+        \node[actor, above right=0.5cm and 2.0cm of input, draw=techBlue, fill=blue!5] (human) {\textbf{Human Experts}\\($n=3$ Seniors)};
+        \node[actor, below right=0.5cm and 2.0cm of input, draw=orange, fill=orange!5] (llm) {\textbf{LLM Agents}\\(GPT, Claude, Mistral)};
+        \node[process, right=0.8cm of human] (platform) {Custom Platform};
+        \node[process, right=0.8cm of llm] (prompt) {Structured Prompts};
+        \coordinate (midpoint) at ($(platform)!0.5!(prompt)$);
+        \node[metric, right=2.0cm of midpoint, align=center] (metrics) {$\vec{m}$};
+        \node[below=0.1cm of metrics, font=\scriptsize, align=center] {12 Metrics\\($m_1 \dots m_{12}$)};
+        \node[corpus, right=1.5cm of metrics, fill=gray!10, draw=black] (output) {\textbf{Score Matrices}\\$S_{Human} \text{ vs } S_{LLM}$};
+
+        \draw[arrow] (input.east) -- ++(0.5,0) |- (human.west);
+        \draw[arrow] (input.east) -- ++(0.5,0) |- (llm.west);
+        \draw[arrow] (human) -- (platform);
+        \draw[arrow] (llm) -- (prompt);
+        \draw[arrow] (platform.east) -- ++(0.5,0) |- (metrics.west);
+        \draw[arrow] (prompt.east) -- ++(0.5,0) |- (metrics.west);
+        \draw[arrow] (metrics) -- (output);
+    \end{tikzpicture}%
+    }
+    \caption{Methodology Flow of the Parallel Code Quality Evaluation Framework.}
+    \label{fig:llm_flow}
+\end{figure*}
+
+\subsubsection{Experimental Setup}
+\begin{itemize}
+    \item \textbf{Dataset:} 75 source code files in Java, C\#, Python, JavaScript, and TypeScript, selected to represent varying code quality.
+    \item \textbf{Evaluators:} 6 LLMs (Claude 3.5 Sonnet, Claude 3.5 Haiku, GPT-4o-mini, Mistral Large, Ministral-8b, Falcon3-7B) compared against 3 human software developers (5–15 years of industry experience).
+    \item \textbf{Metrics:} Code is scored on a scale of 1–10 across 12 quality metrics: comments ($m_1$), DIP ($m_2$), formatting ($m_3$), ISP ($m_4$), KISS ($m_5$), LSP ($m_6$), naming ($m_7$), OCP ($m_8$), performance ($m_9$), DRY/repetition ($m_{10}$), safety ($m_{11}$), and SRP ($m_{12}$).
+\end{itemize}
+
+\subsection{Statistical Rigor \& Consensus Pipeline}
+The study establishes a pipeline to validate the statistical significance of their findings:
+\begin{enumerate}
+    \item \textbf{Normality Check:} The Shapiro-Wilk test is performed on all score distributions. The resulting $p$-values are less than $0.05$ ($p < \alpha$), indicating that the scores do not follow a normal distribution.
+    \item \textbf{Correlation Metric:} Because the data is non-normal, the non-parametric \highlight{Spearman Rank Correlation} ($\rho$) is used to measure monotonic relationships:
+    \begin{equation}
+        \rho = 1 - \frac{6 \sum d_i^2}{n(n^2 - 1)}
+    \end{equation}
+    where $d_i$ is the difference between ranks.
+    \item \textbf{Ground Truth Modeling:} Human developer consensus is modeled to establish a baseline:
+    \begin{equation}
+        GT(f_i) = \text{Median}(S_{Human1}(f_i), S_{Human2}(f_i), S_{Human3}(f_i))
+    \end{equation}
+\end{enumerate}
+
+\subsection{Results \& Benchmarks}
+Table \ref{tab:llm_metrics} outlines the Spearman correlation of each model with the human consensus baseline across all 12 metrics. 
+
+\begin{table}[h]
+    \centering
+    \caption{Spearman correlation ($\rho$) of LLM agents with human consensus.}
+    \label{tab:llm_metrics}
+    \resizebox{\linewidth}{!}{%
+    \begin{tabular}{lcccccc}
+        \toprule
+        \textbf{Metric} & \textbf{Sonnet} & \textbf{GPT-4o-m} & \textbf{Mistral L} & \textbf{Haiku} & \textbf{Min-8b} \\
+        \midrule
+        $m_1$ (Comm.) & \textbf{0.71} & 0.64 & 0.57 & 0.62 & 0.43 \\
+        $m_2$ (DIP)   & \textbf{0.83} & 0.58 & 0.54 & 0.50 & 0.30 \\
+        $m_3$ (Format)& \textbf{0.71} & 0.66 & 0.60 & 0.65 & 0.48 \\
+        $m_4$ (ISP)   & \textbf{0.90} & 0.81 & 0.76 & 0.44 & 0.28 \\
+        $m_5$ (KISS)  & \textbf{0.85} & 0.76 & 0.79 & 0.66 & 0.59 \\
+        $m_6$ (LSP)   & \textbf{0.88} & 0.74 & 0.69 & 0.28 & 0.17 \\
+        $m_7$ (Name)  & 0.80 & 0.72 & \textbf{0.81} & 0.70 & 0.59 \\
+        $m_8$ (OCP)   & \textbf{0.79} & 0.65 & 0.73 & 0.77 & 0.57 \\
+        $m_9$ (Perf)  & 0.73 & 0.66 & \textbf{0.73} & 0.53 & 0.58 \\
+        $m_{10}$ (DRY)& \textbf{0.87} & 0.79 & 0.87 & 0.78 & 0.59 \\
+        $m_{11}$ (Safe)& 0.76 & 0.75 & \textbf{0.77} & 0.70 & 0.69 \\
+        $m_{12}$ (SRP) & \textbf{0.86} & 0.78 & 0.85 & 0.71 & 0.63 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+Claude 3.5 Sonnet achieves the highest alignment with human consensus in \highlight{9/12 metrics}, showing high scores on complex design principles like ISP (0.90) and LSP (0.88). 
+
+Table \ref{tab:cost_analysis} shows the cost-benefit analysis. While Claude Sonnet is highly accurate, it is 31.6 times more expensive than GPT-4o-mini. GPT-4o-mini provides a solid balance of accuracy ($\rho \approx 0.75$) and cost (\$0.27 for 75 files), making it highly suitable for high-volume production pipelines.
+
+\begin{table}[h]
+    \centering
+    \caption{Cost comparison for evaluating 75 code files.}
+    \label{tab:cost_analysis}
+    \small
+    \begin{tabular}{lrc}
+        \toprule
+        \textbf{Evaluator} & \textbf{Cost} & \textbf{Ratio} \\
+        \midrule
+        Claude 3.5 Sonnet & \$8.52 & 31.6$\times$ \\
+        Claude 3.5 Haiku & \$1.66 & 6.1$\times$ \\
+        \rowcolor{techBlue!10}
+        \textbf{GPT-4o-mini} & \textbf{\$0.27} & \textbf{1.0$\times$} \\
+        Human Experts (1-2 days) & \$200--400+ & 740--1480$\times$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Advanced MLE/AIE Proposed Extensions}
+The evaluated LLM review configuration is limited by its single-file context and lack of runtime feedback. We propose three system-level extensions.
+
+\subsubsection{1. Project-Level Dependency Graph-RAG}
+Code files cannot be reviewed accurately in isolation. We propose building a multi-file dependency graph $G = (V, E)$ to represent the code repository, where $V$ represents code entities (methods, classes, modules, database schemas) and $E$ represents relationships (inheritance, method calls, imports, data flows) extracted via Abstract Syntax Tree (AST) parsing.
+During code review of file $f$, the system queries the graph database using Graph-RAG \cite{graph_rag_2024}:
+\begin{equation}
+    C_{context} = \text{Retrieve}(f, G)
+\end{equation}
+This context (containing class definitions and dependent APIs) is injected into the prompt. This allows the LLM to verify project-wide API contracts and detect LSP/DIP violations across file boundaries.
+
+\subsubsection{2. Execution-Guided Dynamic Review Loop}
+LLM code evaluations can sometimes generate hallucinations. We propose integrating a sandboxed runtime compiler-debugger loop:
+\begin{enumerate}
+    \item The LLM suggests structural modifications to resolve a bug or design violation.
+    \item The proposed code is compiled inside a secure Docker container, which runs static checks (Semgrep/SonarQube) and dynamic tests (unit tests, execution profilers).
+    \item The execution feedback (stdout, stderr, compiler logs) is parsed and returned to the LLM agent:
+    \begin{equation}
+        \text{Prompt}_{new} = \text{Prompt}_{old} \cup \{ \text{Compiler Logs} \}
+    \end{equation}
+    \item The LLM iterates on the code until the tests pass. This ensures that the generated code is both architecturally sound and functionally correct.
+\end{enumerate}
+
+\subsubsection{3. Multi-Agent Consensus Debate Protocol}
+Instead of relying on a single LLM, we propose a multi-agent panel representing specialized personas: a Security Architect, a Performance Engineer, and a Clean Code Reviewer.
+Let $s_a^0$ be the initial score vector from agent $a$. A Moderator Agent computes the variance of the scores:
+\begin{equation}
+    \sigma_j^2 = \text{Var}(s_{1,j}^0, s_{2,j}^0, s_{3,j}^0) \quad \text{for metric } j
+\end{equation}
+If $\sigma_j^2 > \tau$ (threshold), the Moderator triggers a multi-turn conversation. The agents debate their scores, referencing specific line numbers. This debate continues until the variance drops below the threshold, yielding a more stable score vector.

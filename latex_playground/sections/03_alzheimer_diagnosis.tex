@@ -1,0 +1,151 @@
+% -----------------------------------------------------------------------------
+% File: sections/03_alzheimer_diagnosis.tex
+% Description: Section 3 - Alzheimer Diagnosis Based on VGG16 Fusion
+% -----------------------------------------------------------------------------
+
+\section{Alzheimer Diagnosis Based on VGG16 Fusion}
+\label{sec:alzheimer}
+
+\paperCard{The New Method for Detection of Alzheimer's Disease}{Bartosz Brejna, Kacper Szmerga\l{}a, Adrianna Kozierkiewicz}{ICCCI 2025}
+
+\subsection{Problem Statement \& Data Leakage}
+Alzheimer's Disease (AD) is a progressive neurodegenerative disorder leading to severe cognitive decline and brain tissue atrophy. Early detection is critical for administering disease-modifying therapies. Magnetic Resonance Imaging (MRI) is a primary non-invasive diagnostic modality used to detect structural changes, particularly in the hippocampus.
+
+A critical flaw in many published high-accuracy deep learning studies is \highlight{data leakage} during dataset splitting. If a dataset is split at the 2D slice level, slices from the same patient (subject) can appear in both the training and testing sets. Because consecutive MRI slices of a patient are highly correlated, the model memorizes patient-specific anatomical features rather than general pathology, leading to overoptimistic performance. To prevent this, a strict \highlight{subject-wise split} must be enforced.
+
+\subsection{Methodology Review}
+Brejna et al. \cite{alzheimer_vgg_2025} propose a robust pipeline that combines standardized MRI preprocessing, progressive transfer learning with VGG16, and a dual-model fusion strategy.
+
+\subsubsection{Standardized MRI Preprocessing Pipeline}
+The raw 3D T1-weighted MRI volumes from the ADNI dataset undergo a standardized six-step preprocessing pipeline to extract the hippocampus Region of Interest (ROI) (see Fig. \ref{fig:mri_pipeline}):
+\begin{enumerate}
+    \item \textbf{FOV Cropping:} Restricting the field-of-view to exclude irrelevant neck tissue.
+    \item \textbf{BET (Brain Extraction Tool):} Skull-stripping to isolate brain tissue.
+    \item \textbf{FLIRT (Linear Registration):} Aligning the brain volume to the MNI152 template using a 12-parameter affine transformation.
+    \item \textbf{FNIRT (Non-Linear Registration):} Refining the alignment locally using non-linear warping.
+    \item \textbf{ROI Extraction:} Isolating the hippocampus region to yield $224 \times 224 \times 3$ 2D slices.
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\linewidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.5cm and 0.3cm,
+        font=\sffamily\tiny,
+        stepbox/.style={rectangle, draw=techBlue!80, fill=white, thick, rounded corners=2pt, text width=1.6cm, align=center, inner sep=2pt, drop shadow={opacity=0.3}},
+        arrow/.style={->, >=stealth, thick, techBlue, rounded corners=2pt}
+    ]
+        % Row 1
+        \node[stepbox] (step1) {\textbf{1. Raw Volume}\\(ADNI Dataset)};
+        \node[stepbox, right=of step1] (step2) {\textbf{2. FOV Crop}\\(Cropping)};
+        \node[stepbox, right=of step2] (step3) {\textbf{3. BET}\\(Skull Stripping)};
+        
+        % Row 2
+        \node[stepbox, below=0.7cm of step3] (step4) {\textbf{4. FLIRT}\\(Linear Reg.)};
+        \node[stepbox, left=of step4] (step5) {\textbf{5. FNIRT}\\(Non-Lin Reg.)};
+        \node[stepbox, left=of step5] (step6) {\textbf{6. ROI Extraction}\\(Hippocampus)};
+
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+        \draw[arrow] (step3.south) -- ++(0,-0.3) -| (step4.north);
+        \draw[arrow] (step4) -- (step5);
+        \draw[arrow] (step5) -- (step6);
+    \end{tikzpicture}%
+    }
+    \caption{Six-step standardized MRI preprocessing pipeline utilizing FSL tools to extract the hippocampal ROI.}
+    \label{fig:mri_pipeline}
+\end{figure}
+
+\subsubsection{Progressive Transfer Learning}
+To prevent catastrophic forgetting and stabilize training on small datasets, a three-phase fine-tuning schedule is implemented:
+\begin{itemize}
+    \item \textbf{Phase 1 (Feature Extraction):} Backbone frozen, custom classifier head trained ($\eta = 10^{-4}$, 10 epochs).
+    \item \textbf{Phase 2 (Shallow Tuning):} Unfreeze last 8 layers, train with low learning rate ($\eta = 10^{-5}$, 10 epochs).
+    \item \textbf{Phase 3 (Deep Tuning):} Unfreeze last 10 layers, train for full adaptation ($\eta = 10^{-5}$, 20 epochs).
+\end{itemize}
+
+\subsubsection{Dual-Model Disjunction Fusion}
+To mitigate false negatives in clinical diagnostics, the authors propose a logical disjunction (OR) fusion. Let $L_1$ be the binary prediction of the Base VGG16 (frozen backbone) and $L_2$ be the prediction of the Tuned VGG16:
+\begin{equation}
+    L_{final} = L_1 \lor L_2
+\end{equation}
+If either model flags the MRI as positive for AD, the final diagnosis is positive, increasing diagnostic sensitivity.
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.9\linewidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.5cm and 0.8cm,
+        font=\sffamily\small,
+        input/.style={rectangle, draw=black, thick, fill=gray!10, minimum width=1.2cm, minimum height=1.2cm, rounded corners=2pt, align=center},
+        model/.style={rectangle, draw=techBlue, thick, fill=white, minimum width=2.2cm, minimum height=0.7cm, rounded corners=3pt, drop shadow, align=center},
+        gate/.style={circle, draw=techBlue, ultra thick, fill=white, minimum size=1.0cm, inner sep=0pt, align=center},
+        outcome/.style={rectangle, draw=black, thick, minimum width=1.8cm, minimum height=0.7cm, rounded corners=3pt, font=\bfseries, align=center},
+        arrow/.style={->, >=stealth, ultra thick, techBlue, rounded corners=5pt}
+    ]
+        \node[input] (mri) {Subject\\MRI};
+        \node[model, above right=0.0cm and 1.2cm of mri] (m1) {Base VGG16 ($L_1$)};
+        \node[model, below right=0.0cm and 1.2cm of mri] (m2) {Tuned VGG16 ($L_2$)};
+        \coordinate (midpoint) at ($(m1.east)!0.5!(m2.east)$);
+        \node[gate, right=1.5cm of midpoint] (or) {\Huge $\lor$};
+        \node[outcome, above right=0.1cm and 1.2cm of or, draw=alertRed, fill=red!10, text=alertRed] (ad) {AD (1)};
+        \node[outcome, below right=0.1cm and 1.2cm of or, draw=codeGreen, fill=green!10, text=codeGreen] (cn) {CN (0)};
+
+        \draw[arrow] (mri.east) -- ++(0.4,0) |- (m1.west);
+        \draw[arrow] (mri.east) -- ++(0.4,0) |- (m2.west);
+        \draw[arrow] (m1.east) -- node[midway, above, font=\scriptsize] {$L_1$} ++(0.6,0) |- (or.west);
+        \draw[arrow] (m2.east) -- node[midway, above, font=\scriptsize] {$L_2$} ++(0.6,0) |- (or.west);
+        \draw[arrow] (or.east) -- ++(0.6,0) |- node[pos=0.7, right, font=\scriptsize, text=alertRed] {True} (ad.west);
+        \draw[arrow, dashed, gray] (or.east) -- ++(0.6,0) |- node[pos=0.7, right, font=\scriptsize, text=codeGreen] {False} (cn.west);
+    \end{tikzpicture}%
+    }
+    \caption{Dual-model logical disjunction (OR) fusion pipeline. By checking both models, it minimizes false negatives.}
+    \label{fig:fusion_logic}
+\end{figure}
+
+\subsection{Experimental Performance \& Analysis}
+Table \ref{tab:alzheimer_results} shows the performance metrics. The disjunction fusion achieves the highest accuracy of \highlight{89.87\%} and boosts diagnostic Sensitivity to \highlight{87.50\%} (+12.5\% over the base model), recovering 5 patients who were previously misdiagnosed. This comes with only a minor drop in Precision compared to the Tuned VGG16 model.
+
+\begin{table}[h]
+    \centering
+    \caption{Performance results of VGG16 models and fusion strategy.}
+    \label{tab:alzheimer_results}
+    \resizebox{\linewidth}{!}{%
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Model Strategy} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Sensitivity} & \textbf{F1-Score} \\
+        \midrule
+        Base VGG16 ($L_1$) & 83.54\% & 90.91\% & 75.00\% & 82.19\% \\
+        Tuned VGG16 ($L_2$) & 87.34\% & \textbf{94.12\%} & 80.00\% & 86.49\% \\
+        \rowcolor{techBlue!10}
+        \textbf{Fused VGG16 ($L_1 \lor L_2$)} & \textbf{89.87\%} & 92.11\% & \textbf{87.50\%} & \textbf{89.74\%} \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\subsection{Advanced MLE/AIE Proposed Extensions}
+While effective, the paper's methods use 2D networks for 3D MRI volumes and apply a naive binary OR logic that can increase false positives in noisier datasets. We propose three advanced extensions.
+
+\subsubsection{1. 3D Swin UNETR Voxel-wise Modeling}
+Instead of slice-wise 2D processing, we propose using a 3D Swin Transformer (Swin UNETR) \cite{swin_unetr_2022} to capture continuous volumetric spatial features. The input 3D MRI volume $X_{3D} \in \mathbb{R}^{H \times W \times D \times C}$ is projected into 3D voxel patches of size $P_h \times P_w \times P_d$. Self-attention is computed over local 3D windows:
+\begin{equation}
+    \text{Attention}(Q,K,V) = \text{Softmax}\left(\frac{QK^T}{\sqrt{d}} + B\right)V
+\end{equation}
+where $B \in \mathbb{R}^{N^2}$ is a 3D relative position bias. This models continuous spatial shrinkage of the hippocampus in 3D, avoiding spatial information loss.
+
+\subsubsection{2. Multi-Modal Cross-Attention Fusion}
+To improve diagnostic accuracy, we propose fusing the MRI imaging features with clinical tabular data (e.g., Mini-Mental State Examination (MMSE) scores, age, APOE-$\epsilon4$ genetic markers, and CSF amyloid-$\beta$ levels). 
+Let $H_{img} \in \mathbb{R}^{N \times d}$ be the spatial image features and $H_{tab} \in \mathbb{R}^{M \times d}$ be the tabular features. We use a cross-attention layer to map the modalities:
+\begin{align}
+    Q &= H_{tab} W_q, \quad K = H_{img} W_k, \quad V = H_{img} W_v \\
+    H_{fused} &= \text{Softmax}\left(\frac{Q K^T}{\sqrt{d}}\right) V \in \mathbb{R}^{M \times d}
+\end{align}
+The fused representation combines visual atrophy features with cognitive and genetic indicators before classification.
+
+\subsubsection{3. Attention-based Multiple Instance Learning (AMIL)}
+Instead of simple average-pooling to aggregate slice predictions, we propose modeling subject-level inference via Attention-based Multiple Instance Learning (AMIL) \cite{amil_ilse_2018}. A patient's MRI is treated as a "bag" of slices $H = \{h_1, \dots, h_N\}$. The bag embedding $Z$ is computed as:
+\begin{equation}
+    Z = \sum_{i=1}^N a_i h_i \quad \text{where } a_i = \frac{\exp(\mathbf{w}^T \tanh(\mathbf{V} h_i^T))}{\sum_{j=1}^N \exp(\mathbf{w}^T \tanh(\mathbf{V} h_j^T))}
+\end{equation}
+where $\mathbf{w} \in \mathbb{R}^{L \times 1}$ and $\mathbf{V} \in \mathbb{R}^{L \times D}$ are learnable parameters. The model automatically learns to weight key slices showing hippocampal atrophy, while ignoring uninformative peripheral slices.

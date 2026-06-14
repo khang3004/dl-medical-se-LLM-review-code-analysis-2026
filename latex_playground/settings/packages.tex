@@ -1,0 +1,59 @@
+% -----------------------------------------------------------------------------
+% File: settings/packages.tex
+% Description: Centralized package imports for the report.
+% -----------------------------------------------------------------------------
+
+% --- Mathematics ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+
+% --- Layout & Geometry ---
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    top=2.0cm,
+    bottom=2.0cm,
+    left=1.6cm,
+    right=1.6cm,
+    columnsep=0.6cm
+}
+
+% --- Fonts & Typography ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{newtxtext,newtxmath} % Standard Times Roman font for papers
+
+% --- Figures & Tables ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{multirow}
+
+% --- TikZ & Visualization ---
+\usepackage{tikz}
+\usetikzlibrary{shapes, shapes.geometric, arrows, positioning, fit, calc, shadows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% --- Code Highlighting ---
+\usepackage{listings}
+\usepackage{xcolor}
+
+% --- Hyperlinks & Referencing ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=techBlue,
+    citecolor=codeGreen,
+    urlcolor=techBlue
+}
+
+% --- Bibliography ---
+\usepackage[style=ieee, backend=biber]{biblatex}
+\addbibresource{bib/references.bib}

@@ -1,0 +1,72 @@
+% -----------------------------------------------------------------------------
+% File: main.tex
+% Description: Main entry point for the modular final LaTeX report.
+% -----------------------------------------------------------------------------
+
+\documentclass[twocolumn, 10pt]{article}
+
+% --- Custom Style & Settings ---
+\input{settings/packages}
+\usepackage{settings/styles}
+\input{settings/commands}
+
+% --- Graphics Paths ---
+\graphicspath{ {./images/} {./figures/} }
+
+% --- Title Block Metadata ---
+\title{
+    \large\textbf{Introduction to Data Science: Final Project Report} \\
+    \vspace{0.4em}
+    \LARGE\highlight{Critical Analysis of Advanced Deep Learning in Medical Imaging \& Automated Software Engineering}
+}
+
+\author{
+    \normalsize
+    \begin{tabular}{c c}
+        \textbf{Khang Nguyen} & \textbf{Duy Thanh Ng.} \\
+        \scriptsize Student ID: 25C01035 & \scriptsize Student ID: 25C01047 \\
+        \scriptsize Email: \href{mailto:25C01035@student.hcmus.edu.vn}{\texttt{25C01035@student.hcmus.edu.vn}} & \scriptsize Email: \href{mailto:25C01047@student.hcmus.edu.vn}{\texttt{25C01047@student.hcmus.edu.vn}} \\
+        & \\
+        \textbf{Ng. Nang Khanh Vu} & \textbf{Huu Hung Mai} \\
+        \scriptsize Student ID: 25C01036 & \scriptsize Student ID: 25C01032 \\
+        \scriptsize Email: \href{mailto:25C01036@student.hcmus.edu.vn}{\texttt{25C01036@student.hcmus.edu.vn}} & \scriptsize Email: \href{mailto:25C01032@student.hcmus.edu.vn}{\texttt{25C01032@student.hcmus.edu.vn}}
+    \end{tabular}
+    \\[1.5em]
+    \small Master of Data Science \\
+    \small\textbf{University of Science, VNU-HCM}
+}
+
+\date{\small\today}
+
+\begin{document}
+
+% Compile Title
+\maketitle
+
+% Abstract (Single-column layout using strip if needed, or simply standard abstract in twocolumn)
+\begin{abstract}
+This report presents a comprehensive critical review and engineering analysis of three state-of-the-art research articles presented at the International Conference on Computational Collective Intelligence (ICCCI 2025). The selected papers address key challenges at the intersection of artificial intelligence, clinical diagnostics, and automated software engineering: leukemia blast cell detection using YOLOv11s, Alzheimer's disease diagnosis using VGG16, and Large Language Model (LLM) code quality reviews. For each paper, we analyze the core methodology, evaluate the experimental results, and identify limitations. Moving beyond a simple literature review, we adopt the perspective of Senior Machine Learning Engineers and AI Architects to propose nine advanced technical extensions. These extensions—including self-supervised cytological pre-training, probabilistic boundary regression, 3D Swin Transformer voxel modeling, multi-modal cross-attention fusion, and execution-guided multi-agent debate protocols—provide concrete, mathematically formal frameworks designed to bridge the gap between academic research and production-grade deployment.
+\end{abstract}
+
+\vspace{1em}
+
+% --- Section 1: Introduction ---
+\input{sections/01_introduction}
+
+% --- Section 2: Leukemia Detection ---
+\input{sections/02_leukemia_detection}
+
+% --- Section 3: Alzheimer Diagnosis ---
+\input{sections/03_alzheimer_diagnosis}
+
+% --- Section 4: LLM Code Review ---
+\input{sections/04_llm_code_review}
+
+% --- Section 5: Conclusion ---
+\input{sections/05_conclusion}
+
+% --- Bibliography ---
+\small
+\printbibliography
+
+\end{document}

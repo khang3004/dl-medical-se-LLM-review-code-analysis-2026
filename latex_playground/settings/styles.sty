@@ -1,0 +1,49 @@
+% -----------------------------------------------------------------------------
+% File: settings/styles.sty
+% Description: Preamble stylesheet setting section styles and headers.
+% -----------------------------------------------------------------------------
+
+\ProvidesPackage{settings/styles}
+
+% --- Section Formatting ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{techBlue}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{darkBlue}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries\color{black}}
+  {\thesubsubsection}{1em}{}
+
+% --- Spacing Adjustments ---
+\titlespacing*{\section}{0pt}{1.2ex plus 0.3ex minus 0.2ex}{0.8ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus 0.2ex minus 0.2ex}{0.6ex plus 0.1ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.1ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+% --- Headers & Footers ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\scriptsize \color{gray} Introduction to Data Science Final Report --- Group 3}
+\fancyhead[R]{\scriptsize \color{gray} \today}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.0pt}
+
+% --- Paragraphs ---
+\setlength{\parindent}{0.4cm}
+\setlength{\parskip}{0.1cm}
+
+% --- Caption Styling ---
+\captionsetup{
+    font=small,
+    labelfont={bf,color=techBlue},
+    labelsep=period,
+    skip=6pt
+}
+
+% --- Table Padding ---
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}

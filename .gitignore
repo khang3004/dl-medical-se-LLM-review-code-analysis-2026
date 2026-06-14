@@ -2,3 +2,11 @@
 /docs/latex_ouput/main.auxlock
 /docs/latex_ouput/main.pdf
 /docs/latex_ouput/main.run.xml
+latex_slides/main.run.xml
+latex_slides/main.pdf
+latex_playground/main.run.xml
+latex_playground/main.bcf
+latex_playground/main.pdf
+docs/LLMs_as_Code_Review_Agents_Review.pdf
+docs/Leukemia_Detection.pdf
+docs/detection_of_Alzheimer_Disease.pdf

@@ -1,0 +1,58 @@
+% -----------------------------------------------------------------------------
+% File: settings/commands.tex
+% Description: Custom colors, operators, and formatting helpers.
+% -----------------------------------------------------------------------------
+
+% --- Color System ---
+\definecolor{techBlue}{RGB}{10, 80, 160}
+\definecolor{darkBlue}{RGB}{5, 40, 90}
+\definecolor{alertRed}{RGB}{190, 30, 30}
+\definecolor{codeGreen}{RGB}{0, 130, 60}
+\definecolor{lightGray}{RGB}{245, 245, 245}
+\definecolor{borderGray}{RGB}{210, 210, 210}
+
+% --- Text Decorators ---
+\newcommand{\highlight}[1]{\textbf{\textcolor{techBlue}{#1}}}
+\newcommand{\keyterm}[1]{\textbf{\textcolor{darkBlue}{#1}}}
+\newcommand{\todo}[1]{\textcolor{alertRed}{\textbf{[TODO: #1]}}}
+
+% --- Code Block Styles ---
+\lstset{
+    backgroundcolor=\color{lightGray},
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{borderGray},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{techBlue}\bfseries,
+    commentstyle=\color{codeGreen}\itshape,
+    stringstyle=\color{alertRed},
+    showstringspaces=false,
+    captionpos=b
+}
+
+% --- Custom Macros ---
+\newcommand{\paperCard}[3]{
+    \noindent\colorbox{lightGray}{
+        \parbox{\linewidth}{
+            \vspace{0.2em}
+            \small\highlight{#1} \\
+            \scriptsize \textit{#2} \hfill \textbf{#3}
+            \vspace{0.2em}
+        }
+    }
+    \vspace{0.8em}
+}
+
+\newcommand{\resultBox}[2]{
+    \noindent\colorbox{lightGray}{
+        \parbox{\linewidth}{
+            \centering
+            \vspace{0.3em}
+            \scriptsize #1 \\
+            \large\textbf{#2}
+            \vspace{0.3em}
+        }
+    }
+}

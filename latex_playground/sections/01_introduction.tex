@@ -1,0 +1,22 @@
+% -----------------------------------------------------------------------------
+% File: sections/01_introduction.tex
+% Description: Section 1 - Introduction to the Report
+% -----------------------------------------------------------------------------
+
+\section{Introduction}
+\label{sec:intro}
+
+The rapid convergence of deep learning architectures and large language models (LLMs) has catalyzed a paradigm shift across diverse industrial and scientific domains. Among these, two fields stand out for their critical importance, high standards of accuracy, and unique engineering challenges: \highlight{Computer-Aided Diagnosis (CAD)} in medical imaging and \highlight{Automated Software Engineering (ASE)} in software development. 
+
+In medical imaging, particularly in hematological oncology and neurodegenerative disease screening, deep learning has transitioned from an experimental tool to a clinical necessity. The diagnosis of diseases like leukemia and Alzheimer's relies heavily on high-precision analysis of visual data, such as peripheral blood smears and magnetic resonance imaging (MRI) scans. However, manual examination of these materials is notoriously time-consuming, prone to subjective variance, and constrained by a global shortage of clinical specialists. The main challenges here are visual: distinguishing subtle cellular morphology aberrations and detecting localized structural brain tissue shrinkage (atrophy) from high-dimensional scans. 
+
+Concurrently, automated software engineering has entered a new era driven by generative artificial intelligence. Code review, which has historically been a human-centric bottleneck in the software development lifecycle (SDLC), is being automated using LLMs as code review agents. This paradigm promises to dramatically reduce developer overhead, accelerate time-to-market, and enforce consistent code quality standards. Nevertheless, deploying LLM agents in production software environments introduces critical questions regarding scoring consistency, domain alignment, data privacy, and the trade-off between API compilation costs and actual quality improvements.
+
+This report presents a rigorous critical analysis of three state-of-the-art research papers presented at the International Conference on Computational Collective Intelligence (ICCCI 2025) that tackle these challenges:
+\begin{enumerate}
+    \item \highlight{Hematology AI:} \textit{Leukemia Detection Based on YOLOv11 with Global and Local Contexts Interaction} \cite{leukemia_gcli_2025}, which optimizes cell-level object detection by replacing self-attention with a lightweight context modeling module.
+    \item \highlight{Neurodegenerative CAD:} \textit{The New Method for Detection of Alzheimer's Disease} \cite{alzheimer_vgg_2025}, which explores subject-level MRI classification using transfer learning and dual-model disjunction logic.
+    \item \highlight{LLM-as-a-Judge:} \textit{LLMs as Code Review Agents: A Rapid Review and Experimental Evaluation with Human Expert Judges} \cite{llm_review_2025}, which conducts a comparative analysis of LLM evaluations versus senior developer consensus.
+\end{enumerate}
+
+Importantly, beyond summarizing these contributions, this report adopts the perspective of Senior Machine Learning Engineers (MLE) and AI Architects (AIE) to propose \highlight{deep technical extensions}. We formulate concrete, mathematically rigorous solutions to address the limitations of these papers, designing architectures that bridge the gap between academic theory and high-performance, cost-effective production deployment.
