@@ -3,18 +3,36 @@
 % Description: Section 2 - Leukemia Detection Based on YOLOv11 with GCLI
 % -----------------------------------------------------------------------------
 
-\section{Leukemia Detection Based on YOLOv11 with GCLI}
+\section{Paper 1: Leukemia Detection Based on YOLOv11 with GCLI}
 \label{sec:leukemia}
 
-\paperCard{Leukemia Detection Based on YOLOv11 with Global and Local Contexts Interaction}{Minh Tai Pham Nguyen, Trong Nhan Le, Minh Khue Pham Tran}{ICCCI 2025}
+\paperCard{Leukemia Detection Based on YOLOv11 with Global and Local Contexts Interaction}{Minh Tai Pham Nguyen, Trong Nhan Le, Minh Khue Pham Tran}{ICCCI 2025, LNAI 16139, pp. 231--242}
 
-\subsection{Problem Statement \& Context}
-Leukemia is a group of malignant cancers originating in the bone marrow, characterized by the uncontrolled proliferation of abnormal, immature white blood cells (blasts). Accurate diagnosis requires distinguishing between four main lineages: Acute Myeloid Leukemia (AML), Chronic Myeloid Leukemia (CML), Acute Lymphocytic Leukemia (ALL), and Chronic Lymphocytic Leukemia (CLL). 
+\subsection{Background and Research Motivation}
+Leukemia is a group of malignant cancers originating in the bone marrow, characterized by the uncontrolled proliferation of abnormal, immature white blood cells (blasts). According to global cancer statistics, leukemia accounts for approximately 2.5\% of all cancers worldwide and is classified into four main types: Acute Myeloid Leukemia (AML), Chronic Myeloid Leukemia (CML), Acute Lymphocytic Leukemia (ALL), and Chronic Lymphocytic Leukemia (CLL).
 
-The primary computer-aided diagnosis (CAD) challenge in peripheral blood smear analysis is the high morphological similarity between malignant blast cells and healthy mature leukocytes (e.g., lymphocytes and monocytes). Conventional convolutional neural networks (CNNs) struggle to balance local features (e.g., chromatin texture, nucleus-to-cytoplasm ratio) and global features (e.g., cellular density, spatial distribution).
+Early detection of leukemia plays a crucial role in the treatment process. However, this is an extremely challenging problem in deep learning-based medical imaging because malignant blast cells often share very similar morphology with healthy mature leukocytes (e.g., lymphocytes and monocytes) on peripheral blood smear images. This makes it difficult for conventional convolutional neural networks (CNNs) to distinguish between normal and abnormal cells without capturing both local features (e.g., chromatin texture, nucleus-to-cytoplasm ratio) and global features (e.g., cellular density, spatial distribution patterns).
 
-\subsection{Methodology Review: The GCLI Module}
-To address these limitations, Pham Nguyen et al. \cite{leukemia_gcli_2025} propose replacing the computationally expensive self-attention mechanism (the C2PSA block) in YOLOv11s with a lightweight \highlight{Global and Local Contexts Interaction (GCLI)} module. 
+Computer-Aided Diagnosis (CAD) systems leveraging deep learning have been proposed to assist medical professionals in preliminary screening, improving both the speed and accuracy of the diagnostic process.
+
+\subsection{Paper Objectives}
+The paper proposes integrating a \highlight{Global Context and Local Interaction (GCLI)} module into the YOLOv11 architecture to improve leukemia blast cell detection. The specific objectives include:
+\begin{itemize}
+    \item Replacing the C2PSA (Position-Sensitive Attention) block in the baseline YOLOv11 with the GCLI module.
+    \item Leveraging the ability to capture long-range dependencies and global--local feature interaction to better distinguish abnormal cells.
+    \item Reducing the parameter count and computational cost compared to the baseline model.
+\end{itemize}
+
+\subsection{Proposed Method}
+
+\subsubsection{The GCLI Module (Global Context and Local Interaction)}
+The GCLI module is built upon the Global Context (GC) block and enhanced with local interaction techniques to improve attention weight generation. The key improvements of GCLI over the traditional GC block are:
+\begin{itemize}
+    \item \textbf{Replacing 2D bottleneck convolutions with 1D convolutions} using large kernels, which avoids dimensionality reduction and preserves rich feature information.
+    \item \textbf{Dual-branch global pooling:} simultaneously applying Global Average Pooling (GAP, for noise suppression) and Global Max Pooling (GMP, for extracting salient features), combining their outputs ($2 \times 1 \times C/2$) before feeding into Conv1D $7\times7$.
+    \item \textbf{SiLU activation function:} inserted between two 1D convolutions to optimize attention weight computation in complex feature spaces.
+    \item \textbf{Partial feature utilization:} using only half of the channels ($C/2$) for attention weight generation, minimizing weighted redundancies.
+\end{itemize}
 
 \subsubsection{Mathematical Formulation}
 The GCLI module processes an input feature map $X \in \mathbb{R}^{W \times H \times C}$ through a multi-stage pipeline:
@@ -23,8 +41,8 @@ The GCLI module processes an input feature map $X \in \mathbb{R}^{W \times H \ti
     \begin{equation}
         X_1, X_2 = \text{Split}(X) \quad \text{where } X_1, X_2 \in \mathbb{R}^{W \times H \times \frac{C}{2}}
     \end{equation}
-    $X_1$ acts as an identity/frozen branch to maintain spatial features, while $X_2$ undergoes attention modulation.
-    
+    $X_1$ acts as an identity (frozen) branch to maintain spatial features, while $X_2$ undergoes attention modulation.
+
     \item \textbf{Global Context Modeling:} Long-range spatial dependencies are extracted from $X_2$ using a query-like projection:
     \begin{align}
         A &= \text{Softmax}(\text{Conv2D}_{1\times1}(X_2)) \in \mathbb{R}^{W \times H \times 1} \\
@@ -32,17 +50,16 @@ The GCLI module processes an input feature map $X \in \mathbb{R}^{W \times H \ti
     \end{align}
     where $\otimes$ denotes matrix multiplication mapping spatial dependencies.
 
-    \item \textbf{Local Channel Interaction:} To capture channel dependencies without dimensionality reduction (avoiding information loss from traditional MLPs), the module computes a global descriptor via Global Average Pooling (GAP) and Global Max Pooling (GMP):
+    \item \textbf{Local Channel Interaction:} The module computes a global descriptor via dual pooling and models local context via sequential 1D Convolutions:
     \begin{equation}
         Y = \text{GAP}(X_{global}) + \text{GMP}(X_{global}) \in \mathbb{R}^{1 \times 1 \times \frac{C}{2}}
     \end{equation}
-    Local context is modeled via sequential 1D Convolutions:
     \begin{equation}
         S = \sigma\left(\text{Conv1D}_{3}\left(\text{SiLU}\left(\text{Conv1D}_{7}(Y)\right)\right)\right) \in \mathbb{R}^{1 \times 1 \times \frac{C}{2}}
     \end{equation}
-    where $\sigma$ is the sigmoid function, and the kernel sizes ($7\times7$ and $3\times3$) capture local multi-scale relationships.
-    
-    \item \textbf{Feature Modulation \& Concatenation:} The final modulated output is formulated as:
+    where $\sigma$ is the sigmoid function. The kernel sizes ($7\times7$ and $3\times3$) capture local multi-scale relationships.
+
+    \item \textbf{Feature Modulation \& Concatenation:} The final modulated output is:
     \begin{align}
         X'_2 &= X_2 \odot S \\
         X_{out} &= \text{Concat}(X_1, X'_2) \in \mathbb{R}^{W \times H \times C}
@@ -50,11 +67,9 @@ The GCLI module processes an input feature map $X \in \mathbb{R}^{W \times H \ti
     where $\odot$ represents channel-wise multiplication.
 \end{enumerate}
 
-The GCLI module is positioned immediately after the Spatial Pyramid Pooling - Fast (SPPF) block in YOLOv11s, enabling attention-guided features to propagate through the multi-scale Neck structure.
-
 \pgfdeclarelayer{background}
 \pgfsetlayers{background,main}
-\begin{figure*}[t]
+\begin{figure}[h]
     \centering
     \resizebox{0.95\textwidth}{!}{%
     \begin{tikzpicture}[
@@ -66,65 +81,66 @@ The GCLI module is positioned immediately after the Spatial Pyramid Pooling - Fa
         groupbox/.style={rectangle, draw=gray, dashed, inner sep=0.3cm, rounded corners=5pt},
         arrow/.style={->, >=stealth, thick, techBlue, rounded corners=3pt}
     ]
-        % 1. INPUT & SPLIT
         \node[tensor, fill=green!10] (input) {Input\\$W \times H \times C$};
         \coordinate[right=0.8cm of input] (split);
         \node[tensor, above right=1.5cm and 1.0cm of split, fill=gray!10] (part1) {Part 1 (Identity)\\$C/2$};
-
-        % --- SUB-MODULE 1: GLOBAL CONTEXT ---
         \node[block, right=0.5cm of split, fill=red!10, yshift=-0.5cm] (conv2d) {Conv2D\\$1\times1$};
         \node[block, right=0.5cm of conv2d, fill=red!10] (softmax) {Softmax};
         \node[op, below=0.4cm of softmax] (mul1) {$\times$};
-
         \draw[arrow] (split) -- ++(0.2, -0.5) |- (conv2d.west);
         \draw[arrow] (conv2d) -- (softmax);
         \draw[arrow] (softmax) -- (mul1);
         \draw[arrow] (split) -- ++(0.2, -0.5) |- (mul1.west);
-
-        % --- SUB-MODULE 2: CHANNEL WEIGHT ---
         \node[tensor, right=0.8cm of mul1] (pools) {GAP + GMP\\(Dual Pool)};
         \node[block, right=0.5cm of pools, fill=yellow!15] (conv1d_7) {Conv1D\\$7\times7$};
         \node[block, right=0.3cm of conv1d_7, fill=yellow!15] (silu) {SiLU};
         \node[block, right=0.3cm of silu, fill=yellow!15] (conv1d_3) {Conv1D\\$3\times3$};
         \node[block, right=0.3cm of conv1d_3, fill=blue!10] (sigmoid) {$\sigma(\cdot)$};
-
         \draw[arrow] (mul1) -- (pools);
         \draw[arrow] (pools) -- (conv1d_7);
         \draw[arrow] (conv1d_7) -- (silu);
         \draw[arrow] (silu) -- (conv1d_3);
         \draw[arrow] (conv1d_3) -- (sigmoid);
-
-        % --- FUSION ---
         \node[op, right=0.5cm of sigmoid] (mul2) {$\times$};
         \node[tensor, right=0.5cm of mul2, fill=purple!10] (concat) {Concat};
         \node[tensor, right=0.5cm of concat] (output) {Output\\$W \times H \times C$};
-
         \draw[arrow] (split) -- ++(0.2, -0.5) -- ++(0, -2.2) -| (mul2.south);
         \draw[arrow] (sigmoid) -- (mul2);
         \draw[arrow] (part1.east) -| (concat.north);
         \draw[arrow] (mul2) -- (concat);
         \draw[arrow] (concat) -- (output);
-
         \draw[arrow] (input) -- (split);
         \draw[arrow] (split) |- (part1);
-
         \begin{pgfonlayer}{background}
             \node[groupbox, fit=(conv2d) (softmax) (mul1), fill=red!2, label={[red]north:\scriptsize Global Context Modeling}] {};
             \node[groupbox, fit=(pools) (conv1d_7) (sigmoid), fill=yellow!2, label={[orange]south:\scriptsize Local Interaction (No Dim Reduction)}] {};
         \end{pgfonlayer}
     \end{tikzpicture}%
     }
-    \caption{Detailed Flowchart of the Global and Local Contexts Interaction (GCLI) Module. Channel splitting isolates features to focus learning on relevant context, while 1D Convolutions prevent information loss due to dimensionality reduction.}
+    \caption{Architecture of the GCLI module. Channel splitting isolates features to focus learning on relevant context, while 1D Convolutions prevent information loss from dimensionality reduction.}
     \label{fig:gcli_architecture}
-\end{figure*}
+\end{figure}
 
-\subsection{Experimental Performance \& Analysis}
-Table \ref{tab:leukemia_results} reproduces the quantitative results on the LeukemiaAttri test dataset.
-The GCLI module achieves a major optimization milestone: it reaches the highest mAP50-95 score of \highlight{25.1\%} while simultaneously reducing the parameter count by \highlight{11\%} (from 9.41M to 8.43M) and reducing GFLOPs (from 21.3 to 20.5) compared to the baseline. While CBAM shows higher sensitivity (55.4\%), GCLI offers the best trade-off in overall localization and regression accuracy.
+\subsubsection{YOLOv11 Architecture with GCLI Integration}
+YOLOv11 is one of the latest models in the YOLO family, inheriting important innovations such as Cross Stage Partial (CSP), the C3K2 feature extraction block, and the C2PSA block for self-attention. In the proposed architecture, the C2PSA block (combining PSA + C2f) is replaced by the GCLI module at the end of the feature extraction phase (backbone). Features processed through GCLI learn attention weights and are then passed to the feature synthesis phase (neck) for combination with multi-scale features. The GCLI module is positioned immediately after the Spatial Pyramid Pooling -- Fast (SPPF) block, enabling attention-guided features to propagate through the multi-scale Neck structure.
+
+\subsection{Experiments and Results}
+
+\subsubsection{LeukemiaAttri Dataset}
+The LeukemiaAttri dataset (Rehman et al., 2024) is used for model evaluation. It is one of the most comprehensive and complex datasets for the leukemia detection problem:
+\begin{itemize}
+    \item \textbf{Total images:} 2,369 peripheral blood smear images at 3 magnification levels: 10x, 40x, and 100x.
+    \item \textbf{Number of classes:} 14 leukemia classification categories, many of which share very similar visual characteristics.
+    \item \textbf{Data split:} 1,677 training images and 692 test images (validation set is sampled from the training set).
+    \item \textbf{Experimental setup:} 100x magnification images with top-down camera angle (angle 2).
+\end{itemize}
+
+\subsubsection{Experimental Results}
+Table~\ref{tab:leukemia_results} presents the comparative performance of YOLOv11s models integrated with various attention modules on the LeukemiaAttri test set. Evaluation metrics include Sensitivity (recall), mAP50, mAP50-95, parameter count (Params), and GFLOPS.
 
 \begin{table}[h]
     \centering
-    \caption{Performance results of object detectors on LeukemiaAttri test set.}
+    \caption{Performance results of object detectors on the LeukemiaAttri test set.}
     \label{tab:leukemia_results}
     \resizebox{\linewidth}{!}{%
     \begin{tabular}{lccccc}
@@ -135,6 +151,8 @@ The GCLI module achieves a major optimization milestone: it reaches the highest 
         YOLOv11s + ECA & 50.6 & 41.3 & 24.3 & 8.43M & 20.5 \\
         YOLOv11s + SE & 53.4 & \textbf{41.7} & 24.3 & 8.43M & 20.5 \\
         YOLOv11s + CBAM & \textbf{55.4} & 40.6 & 23.7 & 8.46M & 20.6 \\
+        YOLOv11s + CA & 51.7 & 39.0 & 22.9 & 8.45M & 20.6 \\
+        YOLOv11s + simAM & 51.5 & 40.2 & 23.4 & 8.43M & 20.5 \\
         YOLOv11s + GCB & 54.0 & 41.4 & 23.8 & 8.46M & 20.6 \\
         \rowcolor{techBlue!10}
         \textbf{YOLOv11s + GCLI} & 53.5 & 41.6 & \textbf{25.1} & \textbf{8.43M} & \textbf{20.5} \\
@@ -143,39 +161,21 @@ The GCLI module achieves a major optimization milestone: it reaches the highest 
     }
 \end{table}
 
-\subsection{Advanced MLE/AIE Proposed Extensions}
-From an advanced engineering perspective, we propose three key enhancements to address GCLI's limitations in detecting latent malignant cells.
+Detailed analysis of the results:
+\begin{itemize}
+    \item \textbf{Baseline YOLOv11s:} Achieves sensitivity of 48.9\%, mAP50 of 38.8\%, and mAP50-95 of 22.6\% with 9.41M parameters and 21.3 GFLOPS.
+    \item \textbf{CBAM} achieves the highest sensitivity (55.4\%) thanks to its combination of channel and spatial attention, but mAP50-95 only reaches 23.7\%.
+    \item \textbf{YOLOv11s + GCLI (proposed):} Achieves the highest mAP50-95 of \highlight{25.1\%}, surpassing all other attention modules in high-precision detection. Sensitivity reaches 53.5\% with only 8.43M parameters (a reduction of over 11\% compared to baseline) and 20.5 GFLOPS.
+    \item \textbf{GCLI} maintains the same parameter count and FLOPS as ECA and simAM (the lightest in the group) while achieving the best overall detection accuracy.
+\end{itemize}
 
-\subsubsection{1. Self-Supervised Cell-MAE Pre-training}
-Rather than training from scratch or COCO-weights, we propose pre-training the backbone using a Masked Autoencoder (MAE) \cite{mae_he_2022} adapted for cytological images. Given a large corpus of unlabeled blood smears:
-\begin{enumerate}
-    \item The smear image is partitioned into non-overlapping patches, and a high fraction (e.g., 75\%) is masked.
-    \begin{equation}
-        H_{latent} = f_{\phi}(X_{unmasked})
-    \end{equation}
-    \item The model reconstructs the pixel values of masked patches via a mean squared error loss:
-    \begin{equation}
-        \mathcal{L}_{MAE} = \frac{1}{|M|}\sum_{i \in M} \| X_i - \hat{X}_i \|^2_2
-    \end{equation}
-    where $M$ is the set of masked pixel indices.
-\end{enumerate}
-This forces the backbone to learn detailed semantic models of cellular structures (e.g., chromatin density and cytoplasmic distribution) without requiring expert manual annotations.
+\subsection{Conclusion and Contributions}
+The paper proposes a YOLOv11 architecture integrating the GCLI module to replace the C2PSA block in the baseline version, enhancing leukemia detection through global--local feature interaction.
 
-\subsubsection{2. Uncertainty-Aware Probabilistic Bounding Box Regression}
-Malignant cells in blood smears often have fuzzy, overlapping, or poorly defined boundaries. Instead of predicting deterministic coordinates $\mathbf{y} = [x, y, w, h]$, we reformulate bounding box regression to output a Gaussian probability distribution:
-\begin{equation}
-    p(\mathbf{y} | X) = \mathcal{N}(\boldsymbol{\mu}_x, \boldsymbol{\Sigma}_x)
-\end{equation}
-The loss function is modified to minimize the Kullback-Leibler (KL) divergence between the predicted distribution and ground truth:
-\begin{equation}
-    \mathcal{L}_{KL} = \frac{1}{2} \left[ \text{Tr}(\boldsymbol{\Sigma}_{gt}^{-1}\boldsymbol{\Sigma}) + (\boldsymbol{\mu} - \boldsymbol{\mu}_{gt})^T \boldsymbol{\Sigma}_{gt}^{-1} (\boldsymbol{\mu} - \boldsymbol{\mu}_{gt}) - k + \ln \left( \frac{|\boldsymbol{\Sigma}_{gt}|}{|\boldsymbol{\Sigma}|} \right) \right]
-\end{equation}
-This models aleatoric uncertainty, allowing the system to flag boundary-ambiguous detections for secondary pathologist verification, lowering the risk of false negatives.
-
-\subsubsection{3. Supervised Contrastive Hard Negative Mining}
-Because mature normal lymphocytes and malignant lymphoblasts share visual features, we propose incorporating a supervised contrastive loss \cite{amil_ilse_2018} on the feature embeddings extracted prior to the detection head. 
-For a batch of extracted cell features $z_i$, the contrastive loss enforces:
-\begin{equation}
-    \mathcal{L}_{SCL} = \sum_{i \in I} \frac{-1}{|P(i)|} \sum_{p \in P(i)} \log \frac{\exp(z_i \cdot z_p / \tau)}{\sum_{a \in A(i)} \exp(z_i \cdot z_a / \tau)}
-\end{equation}
-where $P(i)$ denotes positive instances (cells of the same lineage) and $A(i)$ is the anchor set. This projects embeddings of similar malignant cells closer together, while pushing healthy leukocyte "negatives" further away in hyperspace, boosting sensitivity.
+Key contributions of the paper:
+\begin{itemize}
+    \item Proposes the GCLI module capable of generating efficient channel attention weights without reducing the spatial feature dimensionality.
+    \item The integrated model (YOLOv11s + GCLI) achieves the highest mAP50-95 of 25.1\% on LeukemiaAttri, outperforming the baseline and six other compared attention modules.
+    \item Reduces over 11\% of the parameters compared to the YOLOv11 baseline while maintaining comparable computational speed.
+    \item Demonstrates the potential of attention modules in supporting CAD systems for abnormal cell detection in medical imaging.
+\end{itemize}
